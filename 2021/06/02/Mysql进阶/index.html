@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+
+  
+  <title>Mysql进阶 | Erii B1og</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="关于Mysql底层&#x2F;进阶的一些">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Mysql进阶">
+<meta property="og:url" content="http://uesugier11.github.io/2021/06/02/Mysql%E8%BF%9B%E9%98%B6/index.html">
+<meta property="og:site_name" content="Erii B1og">
+<meta property="og:description" content="关于Mysql底层&#x2F;进阶的一些">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://notes.diguage.com/mysql/assets/images/binaray_search_tree.gif">
+<meta property="og:image" content="https://gitee.com/UesugiEr11/pictures/raw/master/img/array_to_bst.png">
+<meta property="og:image" content="https://gitee.com/UesugiEr11/pictures/raw/master/img/tree_balance.png">
+<meta property="og:image" content="https://gitee.com/UesugiEr11/pictures/raw/master/img/20190430100803346.png">
+<meta property="og:image" content="https://gitee.com/UesugiEr11/pictures/raw/master/img/aHR0cHM6Ly91cGxvYWQtaW1hZ2VzLmppYW5zaHUuaW8vdXBsb2FkX2ltYWdlcy8xNDQ2MDg3LWJjMDIzZTQ3YmM3NGNmYTEuanBn">
+<meta property="og:image" content="https://gitee.com/UesugiEr11/pictures/raw/master/img/702782-20151226202710265-1268539318.png">
+<meta property="og:image" content="https://gitee.com/UesugiEr11/pictures/raw/master/img/aHR0cHM6Ly91cGxvYWQtaW1hZ2VzLmppYW5zaHUuaW8vdXBsb2FkX2ltYWdlcy8xNDQ2MDg3LTMwYjcwYWFhMjg0MDM4MDMuanBn">
+<meta property="article:published_time" content="2021-06-02T12:34:12.103Z">
+<meta property="article:modified_time" content="2021-06-02T12:41:10.192Z">
+<meta property="article:author" content="Erii">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://notes.diguage.com/mysql/assets/images/binaray_search_tree.gif">
+  
+    <link rel="alternate" href="/UesugiEr11.github.io/atom.xml" title="Erii B1og" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  
+<link rel="stylesheet" href="/UesugiEr11.github.io/css/style.css">
+
+<meta name="generator" content="Hexo 5.2.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/UesugiEr11.github.io/" id="logo">Erii B1og</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/UesugiEr11.github.io/">Home</a>
+        
+          <a class="main-nav-link" href="/UesugiEr11.github.io/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/UesugiEr11.github.io/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="搜索"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://uesugier11.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-Mysql进阶" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/UesugiEr11.github.io/2021/06/02/Mysql%E8%BF%9B%E9%98%B6/" class="article-date">
+  <time datetime="2021-06-02T12:34:12.103Z" itemprop="datePublished">2021-06-02</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/UesugiEr11.github.io/categories/%E7%B4%A2%E5%BC%95/">索引</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Mysql进阶
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="索引"><a href="#索引" class="headerlink" title="索引"></a>索引</h1><h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><blockquote>
+<p>要学习索引，首先要明白为什么要引入索引</p>
+</blockquote>
+<h3 id="磁盘"><a href="#磁盘" class="headerlink" title="磁盘"></a>磁盘</h3><p><a target="_blank" rel="noopener" href="https://uesugier11.gitee.io/uesugi-er11/2020/09/08/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/#%E7%A3%81%E7%9B%98">关于磁盘</a></p>
+<h3 id="局部性原理与磁盘预读"><a href="#局部性原理与磁盘预读" class="headerlink" title="局部性原理与磁盘预读"></a>局部性原理与磁盘预读</h3><ul>
+<li><strong>局部性原理</strong></li>
+</ul>
+<p>在OS的学习中，我们学习了<a target="_blank" rel="noopener" href="https://uesugier11.gitee.io/uesugi-er11/2020/09/08/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/#%E5%B1%80%E9%83%A8%E6%80%A7%E5%8E%9F%E7%90%86">局部性原理</a>的相关知识；</p>
+<p>简单的来说就是：<strong>当一个数据被用到时，其附近的数据也通常会马上被使用</strong></p>
+<ul>
+<li><strong>预读</strong></li>
+</ul>
+<p>基于这个理论，磁盘往往不是严格按需读取，而是每次都会<strong>预读</strong>，即使只需要一个字节，磁盘也会从这个位置开始，顺序向后读取一定长度的数据放入内存</p>
+<p>而由于磁盘顺序读取的效率很高（不需要寻道时间，只需很少的旋转时间），因此对于具有局部性的程序来说，预读可以提高I/O效率。</p>
+<ul>
+<li><strong>预读细节</strong></li>
+</ul>
+<p>预读的长度一般为页（page）的整倍数。页是计算机管理存储器的逻辑块，硬件及操作系统往往将主存和磁盘存储区分割为连续的大小相等的块，每个存储块称为一页（在许多操作系统中，页得大小通常为4k），主存和磁盘以页为单位交换数据。当程序要读取的数据不在主存中时，会触发一个缺页异常，此时系统会向磁盘发出读盘信号，磁盘会找到数据的起始位置并向后连续读取一页或几页载入内存中，然后异常返回，程序继续运行。</p>
+<blockquote>
+<p><strong>所以IO一次就是读一页的大小</strong></p>
+</blockquote>
+<ul>
+<li><strong>Mysql预读</strong></li>
+</ul>
+<p>这个道理适用于Mysql的数据处理：MySQL 在读取的时候，并不是每条每条读取，而是每次读取一页，一页通常包含好多条。</p>
+<h3 id="B-Tree（Balance-Plus-Tree）"><a href="#B-Tree（Balance-Plus-Tree）" class="headerlink" title="B+Tree（Balance - Plus - Tree）"></a>B+Tree（Balance - Plus - Tree）</h3><blockquote>
+<p>面试官：对于MySQL，你对他索引原理了解吗？<br>我：了解<br>面试官：MySQL的索引是用什么数据机构的？<br>我：B+树<br>面试官：为什么要用B+树，而不是B树？<br>我：…<br>面试官：用B+树作为MySql的索引结构，用什么好处？</p>
+<p>我：…</p>
+</blockquote>
+<h4 id="二叉搜索树"><a href="#二叉搜索树" class="headerlink" title="二叉搜索树"></a>二叉搜索树</h4><ul>
+<li>二叉搜索树中<strong>每个节点</strong>的特点<ul>
+<li>比保存在左子树的任何键值都要大</li>
+<li>比保存在右子树的任何键值都要小</li>
+</ul>
+</li>
+</ul>
+<p><img src="https://notes.diguage.com/mysql/assets/images/binaray_search_tree.gif" alt></p>
+<p>上图为在有序数组中查找元素【27】的二叉搜索树搜索过程</p>
+<h4 id="平衡二叉查找树"><a href="#平衡二叉查找树" class="headerlink" title="平衡二叉查找树"></a>平衡二叉查找树</h4><p>对于要查找元素 6 的情况：</p>
+<p>下图左边是二叉搜索树，时间复杂度为0（n）；而右边是经过调整（旋转）后的平衡二叉搜索树，此时树的高度减少了一半，查找效率变为O（log2n）</p>
+<p><img src="https://gitee.com/UesugiEr11/pictures/raw/master/img/array_to_bst.png" alt="二叉搜索树对比"></p>
+<ul>
+<li><strong>平衡树旋转保持平衡性</strong></li>
+</ul>
+<p><img src="https://gitee.com/UesugiEr11/pictures/raw/master/img/tree_balance.png" alt="平衡二叉搜索树旋转"></p>
+<h4 id="B-树（Balance-Tree）"><a href="#B-树（Balance-Tree）" class="headerlink" title="B-树（Balance-Tree）"></a>B-树（Balance-Tree）</h4><h5 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h5><blockquote>
+<p><strong>B树</strong>，又称<strong>多路查找树</strong>，概括来说是一个<strong>节点可以拥有多于2个子节点</strong>的二叉查找树</p>
+<p>B树中所有结点的孩子个数的最大值称为B树的<strong>阶</strong>，通常表示为一颗<strong>m阶树</strong>或<strong>空树</strong></p>
+<p>B-tree算法减少定位记录时所经历的中间过程，从而加快存取速度。普遍运用在<strong>数据库</strong>和<strong>文件系统</strong>。</p>
+</blockquote>
+<p><img src="https://gitee.com/UesugiEr11/pictures/raw/master/img/20190430100803346.png" alt="img"></p>
+<h5 id="存储结构"><a href="#存储结构" class="headerlink" title="存储结构"></a>存储结构</h5><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">B_TNode</span>&#123;</span></span><br><span class="line">    <span class="keyword">int</span> numOfKey;<span class="comment">//关键字个数 - 文件数</span></span><br><span class="line">    B_TNode *parent;<span class="comment">//指向父结点的指针</span></span><br><span class="line">    B_TNode **childPtr;<span class="comment">//指向子树的指针，childPtr[0]...childPtr[numOfKey]</span></span><br><span class="line">    <span class="keyword">int</span> *key;<span class="comment">//指向关键字数组的指针</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<h5 id="特点"><a href="#特点" class="headerlink" title="特点"></a>特点</h5><p><img src="https://gitee.com/UesugiEr11/pictures/raw/master/img/aHR0cHM6Ly91cGxvYWQtaW1hZ2VzLmppYW5zaHUuaW8vdXBsb2FkX2ltYWdlcy8xNDQ2MDg3LWJjMDIzZTQ3YmM3NGNmYTEuanBn" alt="B 树"></p>
+<ol>
+<li>每个节点最多有<em>m 个</em>孩子（m&gt;=2）。</li>
+<li>每个非叶节点（根除外）至少有 ⌈ <em>m</em> /2⌉ （向上取整）个子节点。</li>
+<li>如果根不是叶节点，则根至少有两个子节点。</li>
+<li>一个有<em>k 个<em>孩子的非叶节点包含</em>k</em> − 1 个键，即孩子树为3的话，关键字个数为2，前者为4的话，后者为3，以此类推。</li>
+<li>所有叶子都出现在同一层，不携带任何信息。</li>
+</ol>
+<h5 id="B-树的查找"><a href="#B-树的查找" class="headerlink" title="B-树的查找"></a>B-树的查找</h5><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">Data* <span class="title">BTreeSearch</span><span class="params">(Root *node, Key key)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    Data* data;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span>(root == <span class="literal">NULL</span>)</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">NULL</span>;</span><br><span class="line">    data = BinarySearch(node);</span><br><span class="line">    <span class="keyword">if</span>(data-&gt;key == key)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">return</span> data;</span><br><span class="line">    &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">        node = ReadDisk(data-&gt;next);</span><br><span class="line">        BTreeSearch(node, key);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>查找过程</strong></li>
+</ul>
+<p><img src="https://gitee.com/UesugiEr11/pictures/raw/master/img/702782-20151226202710265-1268539318.png" alt="img"></p>
+<p>下面，咱们来模拟下查找<strong>文件29的</strong>过程：</p>
+<ol>
+<li>根据根结点指针找到文件目录的根磁盘块1，将其中的信息导入内存。【磁盘IO操作 1次】  </li>
+<li>此时内存中有两个文件名17、35和三个存储其他磁盘页面地址的数据。根据算法我们发现：17&lt;29&lt;35，因此我们找到指针p2。</li>
+<li>根据p2指针，我们定位到磁盘块3，并将其中的信息导入内存。【磁盘IO操作 2次】  </li>
+<li>此时内存中有两个文件名26，30和三个存储其他磁盘页面地址的数据。根据算法我们发现：26&lt;29&lt;30，因此我们找到指针p2。</li>
+<li>根据p2指针，我们定位到磁盘块8，并将其中的信息导入内存。【磁盘IO操作 3次】  </li>
+<li>此时内存中有两个文件名28，29。根据算法我们查找到文件名29，并定位了该文件内存的磁盘地址。</li>
+</ol>
+<h4 id="B-树"><a href="#B-树" class="headerlink" title="B+树"></a>B+树</h4><blockquote>
+<ol>
+<li>有k个子树的中间节点包含有k个元素（B树中是k-1个元素），<strong>每个元素不保存数据，只用来索引</strong>，所有数据都保存在叶子节点。</li>
+<li>所有的<strong>叶子结点</strong>中包含了<strong>全部元素的信息</strong>，及指向含这些元素记录的指针，且叶子结点本身依关键字的大小<mark>自小而大顺序链接</mark>。（链表）</li>
+<li>所有的中间节点元素都同时存在于子节点，在子节点元素中是<strong>最大（或最小）</strong>元素。</li>
+<li>B+树查找时是<mark>从上到下</mark>查找；B-树则是<mark>从下往上</mark>查找（中序遍历）</li>
+</ol>
+</blockquote>
+<p><img src="https://gitee.com/UesugiEr11/pictures/raw/master/img/aHR0cHM6Ly91cGxvYWQtaW1hZ2VzLmppYW5zaHUuaW8vdXBsb2FkX2ltYWdlcy8xNDQ2MDg3LTMwYjcwYWFhMjg0MDM4MDMuanBn" alt="B+树 1"></p>
+<ul>
+<li><strong>B+树的优势</strong></li>
+</ul>
+<p>1.单一节点存储更多的元素（这样该节点下分支变多了，树变<strong>矮胖</strong>了），使得查询的IO次数更少。</p>
+<p>2.所有查询都要查找到叶子节点，<strong>查询性能稳定</strong>。</p>
+<p>3.所有叶子节点成有序链表，<strong>便于范围查询</strong>。</p>
+<ul>
+<li><mark>为什么说<strong><em>\</em>B+-tree**</strong>比B 树更适合实际应用中操作系统的文件索引和数据库索引？</mark></li>
+</ul>
+<ol>
+<li>B+树更适合外部存储。由于内结点不存放真正的数据（只是存放其子树的最大或最小的关键字，作为索引），一个结点可以存储更多的关键字，每个结点能索引的范围更大更精确，也意味着B+树单次磁盘IO的信息量大于B树，I/O的次数相对减少。</li>
+<li>MySQL是一种关系型数据库，区间访问是常见的一种情况，B+树叶结点增加的链指针，加强了区间访问性，可使用在区间查询的场景（即B+树只要遍历叶子节点就可以实现整棵树的遍历）；<strong>而使用B树则无法进行区间查找。</strong></li>
+</ol>
+<h2 id="InnoDB-逻辑存储结构"><a href="#InnoDB-逻辑存储结构" class="headerlink" title="InnoDB 逻辑存储结构"></a>InnoDB 逻辑存储结构</h2><h1 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h1><h2 id="博客"><a href="#博客" class="headerlink" title="博客"></a>博客</h2><ul>
+<li>（索引 - 树）<a target="_blank" rel="noopener" href="https://notes.diguage.com/mysql/#_%E6%A0%91">https://notes.diguage.com/mysql/#_%E6%A0%91</a></li>
+<li>（b树和b+树）<a target="_blank" rel="noopener" href="https://www.cnblogs.com/ivictor/p/5849061.html">https://www.cnblogs.com/ivictor/p/5849061.html</a></li>
+<li>（B树、B+树学习）<a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_34533266/article/details/112790436">https://blog.csdn.net/qq_34533266/article/details/112790436</a></li>
+<li>（B树和B+树的区别）<a target="_blank" rel="noopener" href="https://blog.csdn.net/a519640026/article/details/106940115">https://blog.csdn.net/a519640026/article/details/106940115</a></li>
+<li>（漫画图解B树与B+树）<a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_35571554/article/details/82759668?utm_medium=distribute.pc_relevant_t0.none-task-blog-2%7Edefault%7EBlogCommendFromMachineLearnPai2%7Edefault-1.baidujs&amp;depth_1-utm_source=distribute.pc_relevant_t0.none-task-blog-2%7Edefault%7EBlogCommendFromMachineLearnPai2%7Edefault-1.baidujs">https://blog.csdn.net/qq_35571554/article/details/82759668?utm_medium=distribute.pc_relevant_t0.none-task-blog-2%7Edefault%7EBlogCommendFromMachineLearnPai2%7Edefault-1.baidujs&amp;depth_1-utm_source=distribute.pc_relevant_t0.none-task-blog-2%7Edefault%7EBlogCommendFromMachineLearnPai2%7Edefault-1.baidujs</a></li>
+</ul>
+<h2 id="工具"><a href="#工具" class="headerlink" title="工具"></a>工具</h2><ul>
+<li>（二叉搜索时可视化工具）<a target="_blank" rel="noopener" href="https://www.cs.usfca.edu/~galles/visualization/BST.html">https://www.cs.usfca.edu/~galles/visualization/BST.html</a></li>
+</ul>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://uesugier11.github.io/2021/06/02/Mysql%E8%BF%9B%E9%98%B6/" data-id="ckppikudc0001p0wibqtjan34" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/UesugiEr11.github.io/2021/04/22/Java%E5%B9%B6%E5%8F%91/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">Java并发</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">分类</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/UesugiEr11.github.io/categories/JVM%E6%A6%82%E8%BF%B0/">JVM概述</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/UesugiEr11.github.io/categories/JVM%E6%A6%82%E8%BF%B0/%E5%86%85%E5%AD%98%E7%BB%93%E6%9E%84/">内存结构</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/UesugiEr11.github.io/categories/JVM%E6%A6%82%E8%BF%B0/%E5%86%85%E5%AD%98%E7%BB%93%E6%9E%84/GC%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6/">GC垃圾回收</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/UesugiEr11.github.io/categories/JVM%E6%A6%82%E8%BF%B0/%E5%86%85%E5%AD%98%E7%BB%93%E6%9E%84/GC%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6/%E7%B1%BB%E5%8A%A0%E8%BD%BD%E4%B8%8E%E5%AD%97%E8%8A%82%E7%A0%81/">类加载与字节码</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/UesugiEr11.github.io/categories/JVM%E6%A6%82%E8%BF%B0/%E5%86%85%E5%AD%98%E7%BB%93%E6%9E%84/GC%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6/%E7%B1%BB%E5%8A%A0%E8%BD%BD%E4%B8%8E%E5%AD%97%E8%8A%82%E7%A0%81/%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B/">内存模型</a></li></ul></li></ul></li></ul></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/UesugiEr11.github.io/categories/JavaWeb/">JavaWeb</a></li><li class="category-list-item"><a class="category-list-link" href="/UesugiEr11.github.io/categories/OS%E5%9F%BA%E7%A1%80/">OS基础</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/UesugiEr11.github.io/categories/OS%E5%9F%BA%E7%A1%80/%E8%BF%9B%E7%A8%8B%E7%BA%BF%E7%A8%8B/">进程线程</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/UesugiEr11.github.io/categories/OS%E5%9F%BA%E7%A1%80/%E8%BF%9B%E7%A8%8B%E7%BA%BF%E7%A8%8B/%E5%A4%84%E7%90%86%E6%9C%BA%E8%B0%83%E5%BA%A6%E4%B8%8E%E6%AD%BB%E9%94%81/">处理机调度与死锁</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/UesugiEr11.github.io/categories/OS%E5%9F%BA%E7%A1%80/%E8%BF%9B%E7%A8%8B%E7%BA%BF%E7%A8%8B/%E5%A4%84%E7%90%86%E6%9C%BA%E8%B0%83%E5%BA%A6%E4%B8%8E%E6%AD%BB%E9%94%81/%E5%86%85%E5%AD%98/">内存</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/UesugiEr11.github.io/categories/OS%E5%9F%BA%E7%A1%80/%E8%BF%9B%E7%A8%8B%E7%BA%BF%E7%A8%8B/%E5%A4%84%E7%90%86%E6%9C%BA%E8%B0%83%E5%BA%A6%E4%B8%8E%E6%AD%BB%E9%94%81/%E5%86%85%E5%AD%98/%E8%99%9A%E6%8B%9F%E5%AD%98%E5%82%A8%E5%99%A8/">虚拟存储器</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/UesugiEr11.github.io/categories/OS%E5%9F%BA%E7%A1%80/%E8%BF%9B%E7%A8%8B%E7%BA%BF%E7%A8%8B/%E5%A4%84%E7%90%86%E6%9C%BA%E8%B0%83%E5%BA%A6%E4%B8%8E%E6%AD%BB%E9%94%81/%E5%86%85%E5%AD%98/%E8%99%9A%E6%8B%9F%E5%AD%98%E5%82%A8%E5%99%A8/%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F/">文件系统</a></li></ul></li></ul></li></ul></li></ul></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/UesugiEr11.github.io/categories/Spring/">Spring</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/UesugiEr11.github.io/categories/Spring/IOC/">IOC</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/UesugiEr11.github.io/categories/Spring/IOC/DI/">DI</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/UesugiEr11.github.io/categories/Spring/IOC/DI/Bean/">Bean</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/UesugiEr11.github.io/categories/Spring/IOC/DI/Bean/AOP/">AOP</a></li></ul></li></ul></li></ul></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/UesugiEr11.github.io/categories/%E4%B8%8EServlet/">与Servlet</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/UesugiEr11.github.io/categories/%E4%B8%8EServlet/HelloSpringMVC/">HelloSpringMVC</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/UesugiEr11.github.io/categories/%E4%B8%8EServlet/HelloSpringMVC/RequestMapping%E6%B3%A8%E8%A7%A3/">RequestMapping注解</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/UesugiEr11.github.io/categories/%E4%B8%8EServlet/HelloSpringMVC/RequestMapping%E6%B3%A8%E8%A7%A3/%E8%AF%B7%E6%B1%82%E5%8F%82%E6%95%B0%E7%9A%84%E7%BB%91%E5%AE%9A/">请求参数的绑定</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/UesugiEr11.github.io/categories/%E4%B8%8EServlet/HelloSpringMVC/RequestMapping%E6%B3%A8%E8%A7%A3/%E8%AF%B7%E6%B1%82%E5%8F%82%E6%95%B0%E7%9A%84%E7%BB%91%E5%AE%9A/%E5%B8%B8%E7%94%A8%E6%B3%A8%E8%A7%A3/">常用注解</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/UesugiEr11.github.io/categories/%E4%B8%8EServlet/HelloSpringMVC/RequestMapping%E6%B3%A8%E8%A7%A3/%E8%AF%B7%E6%B1%82%E5%8F%82%E6%95%B0%E7%9A%84%E7%BB%91%E5%AE%9A/%E5%B8%B8%E7%94%A8%E6%B3%A8%E8%A7%A3/%E5%93%8D%E5%BA%94%E6%95%B0%E6%8D%AE%E4%B8%8E%E7%BB%93%E6%9E%9C%E8%A7%86%E5%9B%BE/">响应数据与结果视图</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/UesugiEr11.github.io/categories/%E4%B8%8EServlet/HelloSpringMVC/RequestMapping%E6%B3%A8%E8%A7%A3/%E8%AF%B7%E6%B1%82%E5%8F%82%E6%95%B0%E7%9A%84%E7%BB%91%E5%AE%9A/%E5%B8%B8%E7%94%A8%E6%B3%A8%E8%A7%A3/%E5%93%8D%E5%BA%94%E6%95%B0%E6%8D%AE%E4%B8%8E%E7%BB%93%E6%9E%9C%E8%A7%86%E5%9B%BE/%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0/">文件上传</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/UesugiEr11.github.io/categories/%E4%B8%8EServlet/HelloSpringMVC/RequestMapping%E6%B3%A8%E8%A7%A3/%E8%AF%B7%E6%B1%82%E5%8F%82%E6%95%B0%E7%9A%84%E7%BB%91%E5%AE%9A/%E5%B8%B8%E7%94%A8%E6%B3%A8%E8%A7%A3/%E5%93%8D%E5%BA%94%E6%95%B0%E6%8D%AE%E4%B8%8E%E7%BB%93%E6%9E%9C%E8%A7%86%E5%9B%BE/%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0/SpringMVC%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86/">SpringMVC异常处理</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/UesugiEr11.github.io/categories/%E4%B8%8EServlet/HelloSpringMVC/RequestMapping%E6%B3%A8%E8%A7%A3/%E8%AF%B7%E6%B1%82%E5%8F%82%E6%95%B0%E7%9A%84%E7%BB%91%E5%AE%9A/%E5%B8%B8%E7%94%A8%E6%B3%A8%E8%A7%A3/%E5%93%8D%E5%BA%94%E6%95%B0%E6%8D%AE%E4%B8%8E%E7%BB%93%E6%9E%9C%E8%A7%86%E5%9B%BE/%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0/SpringMVC%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86/%E6%8B%A6%E6%88%AA%E5%99%A8/">拦截器</a></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/UesugiEr11.github.io/categories/%E5%85%B3%E4%BA%8ESpring/">关于Spring</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/UesugiEr11.github.io/categories/%E5%85%B3%E4%BA%8ESpring/%E5%85%B3%E4%BA%8ESpringBoot/">关于SpringBoot</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/UesugiEr11.github.io/categories/%E5%85%B3%E4%BA%8ESpring/%E5%85%B3%E4%BA%8ESpringBoot/HelloSpringBoot/">HelloSpringBoot</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/UesugiEr11.github.io/categories/%E5%85%B3%E4%BA%8ESpring/%E5%85%B3%E4%BA%8ESpringBoot/HelloSpringBoot/SpringBoot%E7%89%B9%E7%82%B9/">SpringBoot特点</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/UesugiEr11.github.io/categories/%E5%85%B3%E4%BA%8ESpring/%E5%85%B3%E4%BA%8ESpringBoot/HelloSpringBoot/SpringBoot%E7%89%B9%E7%82%B9/%E5%AE%B9%E5%99%A8%E7%BB%84%E4%BB%B6/">容器组件</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/UesugiEr11.github.io/categories/%E5%85%B3%E4%BA%8ESpring/%E5%85%B3%E4%BA%8ESpringBoot/HelloSpringBoot/SpringBoot%E7%89%B9%E7%82%B9/%E5%AE%B9%E5%99%A8%E7%BB%84%E4%BB%B6/%E8%87%AA%E5%8A%A8%E9%85%8D%E7%BD%AE/">自动配置</a></li></ul></li></ul></li></ul></li></ul></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/UesugiEr11.github.io/categories/%E5%89%8D%E8%A8%80/">前言</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/UesugiEr11.github.io/categories/%E5%89%8D%E8%A8%80/%E6%90%AD%E5%BB%BA%E6%95%B4%E5%90%88%E7%8E%AF%E5%A2%83/">搭建整合环境</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/UesugiEr11.github.io/categories/%E5%89%8D%E8%A8%80/%E6%90%AD%E5%BB%BA%E6%95%B4%E5%90%88%E7%8E%AF%E5%A2%83/Spring%E6%90%AD%E5%BB%BA/">Spring搭建</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/UesugiEr11.github.io/categories/%E5%89%8D%E8%A8%80/%E6%90%AD%E5%BB%BA%E6%95%B4%E5%90%88%E7%8E%AF%E5%A2%83/Spring%E6%90%AD%E5%BB%BA/Spring%E6%95%B4%E5%90%88SpringMVC/">Spring整合SpringMVC</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/UesugiEr11.github.io/categories/%E5%89%8D%E8%A8%80/%E6%90%AD%E5%BB%BA%E6%95%B4%E5%90%88%E7%8E%AF%E5%A2%83/Spring%E6%90%AD%E5%BB%BA/Spring%E6%95%B4%E5%90%88SpringMVC/Spring%E6%95%B4%E5%90%88Mybatis/">Spring整合Mybatis</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/UesugiEr11.github.io/categories/%E5%89%8D%E8%A8%80/%E6%90%AD%E5%BB%BA%E6%95%B4%E5%90%88%E7%8E%AF%E5%A2%83/Spring%E6%90%AD%E5%BB%BA/Spring%E6%95%B4%E5%90%88SpringMVC/Spring%E6%95%B4%E5%90%88Mybatis/%E4%B8%80%E4%BA%9B%E5%9D%91/">一些坑</a></li></ul></li></ul></li></ul></li></ul></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/UesugiEr11.github.io/categories/%E6%8E%A5%E5%8F%A3%E5%BC%8F%E7%BC%96%E7%A8%8B/">接口式编程</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/UesugiEr11.github.io/categories/%E6%8E%A5%E5%8F%A3%E5%BC%8F%E7%BC%96%E7%A8%8B/CRUD/">CRUD</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/UesugiEr11.github.io/categories/%E6%8E%A5%E5%8F%A3%E5%BC%8F%E7%BC%96%E7%A8%8B/CRUD/%E8%81%94%E8%A1%A8%E6%9F%A5%E8%AF%A2/">联表查询</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/UesugiEr11.github.io/categories/%E6%8E%A5%E5%8F%A3%E5%BC%8F%E7%BC%96%E7%A8%8B/CRUD/%E8%81%94%E8%A1%A8%E6%9F%A5%E8%AF%A2/%E5%88%86%E6%AD%A5%E6%9F%A5%E8%AF%A2/">分步查询</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/UesugiEr11.github.io/categories/%E6%8E%A5%E5%8F%A3%E5%BC%8F%E7%BC%96%E7%A8%8B/CRUD/%E8%81%94%E8%A1%A8%E6%9F%A5%E8%AF%A2/%E5%88%86%E6%AD%A5%E6%9F%A5%E8%AF%A2/%E5%BB%B6%E8%BF%9F%E6%9F%A5%E8%AF%A2/">延迟查询</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/UesugiEr11.github.io/categories/%E6%8E%A5%E5%8F%A3%E5%BC%8F%E7%BC%96%E7%A8%8B/CRUD/%E8%81%94%E8%A1%A8%E6%9F%A5%E8%AF%A2/%E5%88%86%E6%AD%A5%E6%9F%A5%E8%AF%A2/%E5%BB%B6%E8%BF%9F%E6%9F%A5%E8%AF%A2/%E5%8F%82%E6%95%B0%E5%A4%84%E7%90%86/">参数处理</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/UesugiEr11.github.io/categories/%E6%8E%A5%E5%8F%A3%E5%BC%8F%E7%BC%96%E7%A8%8B/CRUD/%E8%81%94%E8%A1%A8%E6%9F%A5%E8%AF%A2/%E5%88%86%E6%AD%A5%E6%9F%A5%E8%AF%A2/%E5%BB%B6%E8%BF%9F%E6%9F%A5%E8%AF%A2/%E5%8F%82%E6%95%B0%E5%A4%84%E7%90%86/%E7%BC%93%E5%AD%98/">缓存</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/UesugiEr11.github.io/categories/%E6%8E%A5%E5%8F%A3%E5%BC%8F%E7%BC%96%E7%A8%8B/CRUD/%E8%81%94%E8%A1%A8%E6%9F%A5%E8%AF%A2/%E5%88%86%E6%AD%A5%E6%9F%A5%E8%AF%A2/%E5%BB%B6%E8%BF%9F%E6%9F%A5%E8%AF%A2/%E5%8F%82%E6%95%B0%E5%A4%84%E7%90%86/%E7%BC%93%E5%AD%98/Mybatis%E8%BF%90%E8%A1%8C%E5%8E%9F%E7%90%86-%E6%BA%90%E7%A0%81/">Mybatis运行原理(源码)</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/UesugiEr11.github.io/categories/%E6%8E%A5%E5%8F%A3%E5%BC%8F%E7%BC%96%E7%A8%8B/CRUD/%E8%81%94%E8%A1%A8%E6%9F%A5%E8%AF%A2/%E5%88%86%E6%AD%A5%E6%9F%A5%E8%AF%A2/%E5%BB%B6%E8%BF%9F%E6%9F%A5%E8%AF%A2/%E5%8F%82%E6%95%B0%E5%A4%84%E7%90%86/%E7%BC%93%E5%AD%98/Mybatis%E8%BF%90%E8%A1%8C%E5%8E%9F%E7%90%86-%E6%BA%90%E7%A0%81/%E6%8F%92%E4%BB%B6/">插件</a></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/UesugiEr11.github.io/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/">数据结构</a></li><li class="category-list-item"><a class="category-list-link" href="/UesugiEr11.github.io/categories/%E6%A0%B8%E5%BF%83%E7%90%86%E8%AE%BA/">核心理论</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/UesugiEr11.github.io/categories/%E6%A0%B8%E5%BF%83%E7%90%86%E8%AE%BA/%E5%B9%B6%E5%8F%91%E6%9C%BA%E5%88%B6%E5%BA%95%E5%B1%82/">并发机制底层</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/UesugiEr11.github.io/categories/%E6%A0%B8%E5%BF%83%E7%90%86%E8%AE%BA/%E5%B9%B6%E5%8F%91%E6%9C%BA%E5%88%B6%E5%BA%95%E5%B1%82/%E9%94%81%E6%9C%BA%E5%88%B6/">锁机制</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/UesugiEr11.github.io/categories/%E6%A0%B8%E5%BF%83%E7%90%86%E8%AE%BA/%E5%B9%B6%E5%8F%91%E6%9C%BA%E5%88%B6%E5%BA%95%E5%B1%82/%E9%94%81%E6%9C%BA%E5%88%B6/Java%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B/">Java内存模型</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/UesugiEr11.github.io/categories/%E6%A0%B8%E5%BF%83%E7%90%86%E8%AE%BA/%E5%B9%B6%E5%8F%91%E6%9C%BA%E5%88%B6%E5%BA%95%E5%B1%82/%E9%94%81%E6%9C%BA%E5%88%B6/Java%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B/Lock%E4%BD%93%E7%B3%BB/">Lock体系</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/UesugiEr11.github.io/categories/%E6%A0%B8%E5%BF%83%E7%90%86%E8%AE%BA/%E5%B9%B6%E5%8F%91%E6%9C%BA%E5%88%B6%E5%BA%95%E5%B1%82/%E9%94%81%E6%9C%BA%E5%88%B6/Java%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B/Lock%E4%BD%93%E7%B3%BB/%E5%B9%B6%E5%8F%91%E5%AE%B9%E5%99%A8/">并发容器</a></li></ul></li></ul></li></ul></li></ul></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/UesugiEr11.github.io/categories/%E7%89%A9%E7%90%86%E5%B1%82/">物理层</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/UesugiEr11.github.io/categories/%E7%89%A9%E7%90%86%E5%B1%82/%E6%95%B0%E6%8D%AE%E9%93%BE%E8%B7%AF%E5%B1%82/">数据链路层</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/UesugiEr11.github.io/categories/%E7%89%A9%E7%90%86%E5%B1%82/%E6%95%B0%E6%8D%AE%E9%93%BE%E8%B7%AF%E5%B1%82/%E7%BD%91%E7%BB%9C%E5%B1%82/">网络层</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/UesugiEr11.github.io/categories/%E7%89%A9%E7%90%86%E5%B1%82/%E6%95%B0%E6%8D%AE%E9%93%BE%E8%B7%AF%E5%B1%82/%E7%BD%91%E7%BB%9C%E5%B1%82/%E4%BC%A0%E8%BE%93%E5%B1%82/">传输层</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/UesugiEr11.github.io/categories/%E7%89%A9%E7%90%86%E5%B1%82/%E6%95%B0%E6%8D%AE%E9%93%BE%E8%B7%AF%E5%B1%82/%E7%BD%91%E7%BB%9C%E5%B1%82/%E4%BC%A0%E8%BE%93%E5%B1%82/%E5%BA%94%E7%94%A8%E5%B1%82/">应用层</a></li></ul></li></ul></li></ul></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/UesugiEr11.github.io/categories/%E7%B4%A2%E5%BC%95/">索引</a></li><li class="category-list-item"><a class="category-list-link" href="/UesugiEr11.github.io/categories/%E9%80%92%E5%BD%92-%E5%88%86%E6%B2%BB/">递归 分治</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/UesugiEr11.github.io/categories/%E9%80%92%E5%BD%92-%E5%88%86%E6%B2%BB/%E4%BA%8C%E5%88%86/">二分</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/UesugiEr11.github.io/categories/%E9%80%92%E5%BD%92-%E5%88%86%E6%B2%BB/%E4%BA%8C%E5%88%86/%E8%B4%AA%E5%BF%83/">贪心</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/UesugiEr11.github.io/categories/%E9%80%92%E5%BD%92-%E5%88%86%E6%B2%BB/%E4%BA%8C%E5%88%86/%E8%B4%AA%E5%BF%83/DP/">DP</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/UesugiEr11.github.io/categories/%E9%80%92%E5%BD%92-%E5%88%86%E6%B2%BB/%E4%BA%8C%E5%88%86/%E8%B4%AA%E5%BF%83/DP/%E6%8E%92%E5%BA%8F/">排序</a></li></ul></li></ul></li></ul></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/UesugiEr11.github.io/categories/%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1/">面向对象</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/UesugiEr11.github.io/categories/%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1/%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B/">数据类型</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/UesugiEr11.github.io/categories/%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1/%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B/%E5%BC%82%E5%B8%B8/">异常</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/UesugiEr11.github.io/categories/%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1/%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B/%E5%BC%82%E5%B8%B8/%E6%B3%A8%E8%A7%A3%E5%8F%8D%E5%B0%84/">注解反射</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/UesugiEr11.github.io/categories/%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1/%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B/%E5%BC%82%E5%B8%B8/%E6%B3%A8%E8%A7%A3%E5%8F%8D%E5%B0%84/%E5%A4%9A%E7%BA%BF%E7%A8%8B/">多线程</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/UesugiEr11.github.io/categories/%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1/%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B/%E5%BC%82%E5%B8%B8/%E6%B3%A8%E8%A7%A3%E5%8F%8D%E5%B0%84/%E5%A4%9A%E7%BA%BF%E7%A8%8B/%E4%BB%A3%E7%90%86/">代理</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/UesugiEr11.github.io/categories/%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1/%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B/%E5%BC%82%E5%B8%B8/%E6%B3%A8%E8%A7%A3%E5%8F%8D%E5%B0%84/%E5%A4%9A%E7%BA%BF%E7%A8%8B/%E4%BB%A3%E7%90%86/%E5%85%B3%E9%94%AE%E5%AD%97/">关键字</a></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/UesugiEr11.github.io/tags/Cookie/" rel="tag">Cookie</a></li><li class="tag-list-item"><a class="tag-list-link" href="/UesugiEr11.github.io/tags/Filter/" rel="tag">Filter</a></li><li class="tag-list-item"><a class="tag-list-link" href="/UesugiEr11.github.io/tags/Http/" rel="tag">Http</a></li><li class="tag-list-item"><a class="tag-list-link" href="/UesugiEr11.github.io/tags/JDBC/" rel="tag">JDBC</a></li><li class="tag-list-item"><a class="tag-list-link" href="/UesugiEr11.github.io/tags/Java/" rel="tag">Java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/UesugiEr11.github.io/tags/Listener/" rel="tag">Listener</a></li><li class="tag-list-item"><a class="tag-list-link" href="/UesugiEr11.github.io/tags/Mavan/" rel="tag">Mavan</a></li><li class="tag-list-item"><a class="tag-list-link" href="/UesugiEr11.github.io/tags/Servlet/" rel="tag">Servlet</a></li><li class="tag-list-item"><a class="tag-list-link" href="/UesugiEr11.github.io/tags/Session/" rel="tag">Session</a></li><li class="tag-list-item"><a class="tag-list-link" href="/UesugiEr11.github.io/tags/Tomcat/" rel="tag">Tomcat</a></li><li class="tag-list-item"><a class="tag-list-link" href="/UesugiEr11.github.io/tags/Web/" rel="tag">Web</a></li><li class="tag-list-item"><a class="tag-list-link" href="/UesugiEr11.github.io/tags/%E5%9B%BE/" rel="tag">图</a></li><li class="tag-list-item"><a class="tag-list-link" href="/UesugiEr11.github.io/tags/%E5%AD%97%E7%AC%A6%E4%B8%B2/" rel="tag">字符串</a></li><li class="tag-list-item"><a class="tag-list-link" href="/UesugiEr11.github.io/tags/%E6%95%B0%E7%BB%84/" rel="tag">数组</a></li><li class="tag-list-item"><a class="tag-list-link" href="/UesugiEr11.github.io/tags/%E6%A0%88/" rel="tag">栈</a></li><li class="tag-list-item"><a class="tag-list-link" href="/UesugiEr11.github.io/tags/%E6%A0%91/" rel="tag">树</a></li><li class="tag-list-item"><a class="tag-list-link" href="/UesugiEr11.github.io/tags/%E9%93%BE%E8%A1%A8/" rel="tag">链表</a></li><li class="tag-list-item"><a class="tag-list-link" href="/UesugiEr11.github.io/tags/%E9%98%9F%E5%88%97/" rel="tag">队列</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget tagcloud">
+      <a href="/UesugiEr11.github.io/tags/Cookie/" style="font-size: 10px;">Cookie</a> <a href="/UesugiEr11.github.io/tags/Filter/" style="font-size: 10px;">Filter</a> <a href="/UesugiEr11.github.io/tags/Http/" style="font-size: 10px;">Http</a> <a href="/UesugiEr11.github.io/tags/JDBC/" style="font-size: 10px;">JDBC</a> <a href="/UesugiEr11.github.io/tags/Java/" style="font-size: 10px;">Java</a> <a href="/UesugiEr11.github.io/tags/Listener/" style="font-size: 10px;">Listener</a> <a href="/UesugiEr11.github.io/tags/Mavan/" style="font-size: 10px;">Mavan</a> <a href="/UesugiEr11.github.io/tags/Servlet/" style="font-size: 10px;">Servlet</a> <a href="/UesugiEr11.github.io/tags/Session/" style="font-size: 10px;">Session</a> <a href="/UesugiEr11.github.io/tags/Tomcat/" style="font-size: 10px;">Tomcat</a> <a href="/UesugiEr11.github.io/tags/Web/" style="font-size: 10px;">Web</a> <a href="/UesugiEr11.github.io/tags/%E5%9B%BE/" style="font-size: 10px;">图</a> <a href="/UesugiEr11.github.io/tags/%E5%AD%97%E7%AC%A6%E4%B8%B2/" style="font-size: 10px;">字符串</a> <a href="/UesugiEr11.github.io/tags/%E6%95%B0%E7%BB%84/" style="font-size: 10px;">数组</a> <a href="/UesugiEr11.github.io/tags/%E6%A0%88/" style="font-size: 10px;">栈</a> <a href="/UesugiEr11.github.io/tags/%E6%A0%91/" style="font-size: 10px;">树</a> <a href="/UesugiEr11.github.io/tags/%E9%93%BE%E8%A1%A8/" style="font-size: 10px;">链表</a> <a href="/UesugiEr11.github.io/tags/%E9%98%9F%E5%88%97/" style="font-size: 10px;">队列</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/UesugiEr11.github.io/archives/2021/06/">六月 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/UesugiEr11.github.io/archives/2021/04/">四月 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/UesugiEr11.github.io/archives/2021/03/">三月 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/UesugiEr11.github.io/archives/2021/01/">一月 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/UesugiEr11.github.io/archives/2020/11/">十一月 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/UesugiEr11.github.io/archives/2020/10/">十月 2020</a></li><li class="archive-list-item"><a class="archive-list-link" href="/UesugiEr11.github.io/archives/2020/09/">九月 2020</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/UesugiEr11.github.io/2021/06/02/Mysql%E8%BF%9B%E9%98%B6/">Mysql进阶</a>
+          </li>
+        
+          <li>
+            <a href="/UesugiEr11.github.io/2021/04/22/Java%E5%B9%B6%E5%8F%91/">Java并发</a>
+          </li>
+        
+          <li>
+            <a href="/UesugiEr11.github.io/2021/03/29/JVM/">JVM</a>
+          </li>
+        
+          <li>
+            <a href="/UesugiEr11.github.io/2021/03/21/SpringBoot/">SpringBoot</a>
+          </li>
+        
+          <li>
+            <a href="/UesugiEr11.github.io/2021/03/18/SSM%E6%95%B4%E5%90%88/">SSM整合</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2021 Erii<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/UesugiEr11.github.io/" class="mobile-nav-link">Home</a>
+  
+    <a href="/UesugiEr11.github.io/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  
+<link rel="stylesheet" href="/UesugiEr11.github.io/fancybox/jquery.fancybox.css">
+
+  
+<script src="/UesugiEr11.github.io/fancybox/jquery.fancybox.pack.js"></script>
+
+
+
+
+<script src="/UesugiEr11.github.io/js/script.js"></script>
+
+
+
+
+  </div>
+</body>
+</html>
